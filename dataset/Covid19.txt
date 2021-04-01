@@ -1,0 +1,6 @@
+http://ns.inria.fr/covid19/graph/articles
+http://ns.inria.fr/covid19/graph/metadata
+http://ns.inria.fr/covid19/graph/entityfishing
+http://ns.inria.fr/covid19/graph/dbpedia-spotlight
+http://ns.inria.fr/covid19/graph/bioportal-annotator
+http://ns.inria.fr/covid19/graph/acta
