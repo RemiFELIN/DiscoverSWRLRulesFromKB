@@ -51,7 +51,7 @@ The results are the same of the other algorithm, but they are constantly updated
 > file *.txt with the named graphs to query (if any).
 
 **Output** on *./SWRLRulesFromRDF/[Name of input file]/[ddMMyyyy_hhmmss]/* folder
-> files *.txt with the rules, log traces, results of queries, ... which will write on ./SWRLRulesFromRDF/[Name of input file]/[ddMMyyyy_hhmmss]/ folder 
+> files *.txt with the rules, log traces, results of queries, ...
 
 ### Parameters
 This jar takes the following parameters :
@@ -86,9 +86,12 @@ This jar takes the following parameters :
 ### Description
 Thanks to the use of genetic alghorithms and the OWL API, it is possible to extract information from the ontology loaded. These new knowledge is in the form of SWRL rules. The genetic algorithm evolves the population containing the classes and the properties of the ontology, discovering new patterns, until the best remain. The rules are in a file *.txt .
 
-Input: file *.owl (ontology)
+**Input** 
+> file *.owl (ontology)
 
-Output: file *.txt (rules)
+**Output** on ./SWRLRulesFromOntology/[Name of input file]/[ddMMyyyy_hhmmss]/ folder
+> files *.txt with the rules, log traces, consistent rules if checkConsistency was used
+
 
 #### CheckConsistencyRules (Optional)
 
