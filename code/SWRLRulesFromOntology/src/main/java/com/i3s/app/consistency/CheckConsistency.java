@@ -39,9 +39,7 @@ public class CheckConsistency
 			return;
 		}
     	
-		logFile.log("INFO", className, "STARTING " + file.getAbsolutePath() + " ANALYSIS ...");
-        
-        Global.THREAD_SLEEP = 10000;        
+		logFile.log("INFO", className, "STARTING " + file.getAbsolutePath() + " ANALYSIS ...");     
       
         // the file with the rules checked
         Global.OUTPUT_PATTERNS_IN_FILE = Global.outputDir + "/" + FilenameUtils.removeExtension(file.getName()) + "_ConsistentRules.txt";

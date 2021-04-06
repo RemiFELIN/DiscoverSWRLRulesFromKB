@@ -40,9 +40,16 @@ public class GeneticAlgorithm
 			//a population has maximum 5000 individuals, so in this case we take the best
 			//the crossover_size is 1000, so we mate patterns in position from 0 to 2000
 			//and then we mate patterns from 0 to 3000
-			ArrayList<Pattern> patternCrossOver1 = crossOver(oldListPatterns.get(i), oldListPatterns.get(i+Global.CROSSOVER_SIZE));
-			ArrayList<Pattern> patternCrossOver2 = crossOver(oldListPatterns.get(i), oldListPatterns.get(i+2*Global.CROSSOVER_SIZE));
-
+			// ArrayList<Pattern> patternCrossOver1 = crossOver(oldListPatterns.get(i), oldListPatterns.get(i+Global.CROSSOVER_SIZE));
+			// ArrayList<Pattern> patternCrossOver2 = crossOver(oldListPatterns.get(i), oldListPatterns.get(i+2*Global.CROSSOVER_SIZE));
+			
+			// this approch proposed in the first version cannot work if we would like to compute a crossover with a rate greater than (1/3) * oldListPatterns.size()
+        	// To resolve this problem, we propose to add a condition and then dodge the IndexOutOfBoundsException 
+        	int idxForPatternCrossOver1 = (i + Global.CROSSOVER_SIZE) >= oldListPatterns.size() ? (oldListPatterns.size() - 1) : (i + Global.CROSSOVER_SIZE);
+        	ArrayList<Pattern> patternCrossOver1 = crossOver(oldListPatterns.get(i), oldListPatterns.get(idxForPatternCrossOver1));
+        	int idxForPatternCrossOver2 = (i + 2 * Global.CROSSOVER_SIZE) >= oldListPatterns.size() ? (oldListPatterns.size() - 1) : (i + 2 * Global.CROSSOVER_SIZE);
+            ArrayList<Pattern> patternCrossOver2 = crossOver(oldListPatterns.get(i), oldListPatterns.get(idxForPatternCrossOver2));
+			
 			//it loops only 2 times, because there are only 2 offsprings
 			for(int j=0; j<patternCrossOver1.size(); j++)
 			{

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,7 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
+import org.semanticweb.owlapi.model.IRI;
 
 import com.i3s.app.common.Global;
 import com.i3s.app.common.MyRandom;
@@ -61,7 +63,6 @@ public class SWRLRulesRDF
 		Global.myRandom = new MyRandom(); 
 		//Fills the array from a file which contains all the necessary graphs.
 		ArrayList<String> graph = new ArrayList<String>();
-		// File file = new File("D:\\Travail\\MIAGE\\Stage\\repo\\DiscoverSWRLRulesFromKB\\Data_owl\\graph.txt"); 
 		
 		BufferedReader br = new BufferedReader(new FileReader(path)); 
 		String iri; 
@@ -75,7 +76,7 @@ public class SWRLRulesRDF
 		try {
 			//Output of the queries
 			OutputInformation output = new OutputInformation(Global.outputDir + "/" + Global.outputName + "_RESULTSQueryClass.txt", logFile);
-			logFile.log("INFO", className, "file " + OutputInformation.outputFile.getPath() + " created ...");
+			logFile.log("INFO", className, "file " + OutputInformation.outputFile.getPath().replace("\\", "/") + " created ...");
 			//Do the query for each graph in the array. 
 			//If the use of a graph is not necessary, remove the for loop and the "FROM" clause from the query.
 			for(String i : graph) {
@@ -208,6 +209,9 @@ public class SWRLRulesRDF
 			int count = 0;
 
 			logFile.log("INFO", className, "Size of final population: " + population.getListIndividuals().size());
+			logFile.log("INFO", className, "The number of times to crossover between the patterns of a population: " + Global.CROSSOVER_SIZE);
+            logFile.log("INFO", className, "The number of times to mutation between the patterns of a population: " + Global.MUTATION_SIZE);
+            
 			int count2 = 0;
 			for(int i = 0; i < population.getListIndividuals().size(); i++)
 			{   
@@ -233,21 +237,21 @@ public class SWRLRulesRDF
 	}
 
 	/**
-	 * The entry point of the Genetic Algorithm application.
-	 * @param args 
-	 * @throws Exception 
-	 */
-	public static void main(String args[]) throws Exception
-	{
-		
+     * Initialize all parameters needed to execute this tool
+     * @param args the arguments given at execution
+     * @return cmd an instance of the CommandLine if all parameters are avalaible, else null
+     */
+    public static CommandLine initParameters(String args[]) {
+
 		Options options = new Options();
 		
 		Option paramFile = new Option(Parameters.FILE, true, Parameters.FILE_DESCRIPTION);
-		Option paramUrl = new Option(Parameters.URL, true, Parameters.URL_DESCRIPTION);
-		Option paramNexe = new Option(Parameters.NUMBER_OF_EXECUTIONS, Parameters.NUMBER_OF_EXECUTIONS_FULL, true, Parameters.NUMBER_OF_EXECUTIONS_DESCRIPTION);
+		Option paramUrl = new Option(Parameters.SPARQL_ENDPOINT, Parameters.SPARQL_ENDPOINT_FULL, true, Parameters.SPARQL_ENDPOINT_DESCRIPTION);
+		Option paramNexe = new Option(Parameters.NUMBER_OF_EXECUTION, Parameters.NUMBER_OF_EXECUTION_FULL, true, Parameters.NUMBER_OF_EXECUTION_DESCRIPTION);
 		Option paramNgen = new Option(Parameters.NUMBER_OF_GENERATION, Parameters.NUMBER_OF_GENERATION_FULL, true, Parameters.NUMBER_OF_GENERATION_DESCRIPTION);
-		Option paramCrsz = new Option(Parameters.CROSSOVER_SIZE, Parameters.CROSSOVER_SIZE_FULL, true, Parameters.CROSSOVER_SIZE_DESCRIPTION);
-		Option paramMtsz = new Option(Parameters.MUTATION_SIZE, Parameters.MUTATION_SIZE_FULL, true, Parameters.MUTATION_SIZE_DESCRIPTION);
+		Option paramPosz = new Option(Parameters.POPULATION_SIZE, Parameters.POPULATION_SIZE_FULL, true, Parameters.POPULATION_SIZE_DESCRIPTION);
+		Option paramCrrt = new Option(Parameters.CROSSOVER_RATE, Parameters.CROSSOVER_RATE_FULL, true, Parameters.CROSSOVER_RATE_DESCRIPTION);
+		Option paramMtrt = new Option(Parameters.MUTATION_RATE, Parameters.MUTATION_RATE_FULL, true, Parameters.MUTATION_RATE_DESCRIPTION);
 		Option paramMtth = new Option(Parameters.MUTATION_THRESHOLD, Parameters.MUTATION_THRESHOLD_FULL, true, Parameters.MUTATION_THRESHOLD_DESCRIPTION);
 		
 		paramFile.setRequired(true);
@@ -256,10 +260,12 @@ public class SWRLRulesRDF
 		paramNexe.setType(Integer.class);
 		paramNgen.setRequired(false);
 		paramNgen.setType(Integer.class);
-		paramCrsz.setRequired(false);
-		paramCrsz.setType(Integer.class);
-		paramMtsz.setRequired(false);
-		paramMtsz.setType(Integer.class);
+		paramPosz.setRequired(false);
+		paramPosz.setType(Integer.class);
+		paramCrrt.setRequired(false);
+		paramCrrt.setType(Integer.class);
+		paramMtrt.setRequired(false);
+		paramMtrt.setType(Integer.class);
 		paramMtth.setRequired(false);
 		paramMtth.setType(Double.class);
 		
@@ -267,8 +273,9 @@ public class SWRLRulesRDF
 		options.addOption(paramUrl);
 		options.addOption(paramNexe);
 		options.addOption(paramNgen);
-		options.addOption(paramCrsz);
-		options.addOption(paramMtsz);
+		options.addOption(paramPosz);
+		options.addOption(paramCrrt);
+		options.addOption(paramMtrt);
 		options.addOption(paramMtth);
 		
 		CommandLineParser parser = new DefaultParser();
@@ -278,83 +285,128 @@ public class SWRLRulesRDF
 		try {
 			cmd = parser.parse(options, args);
 		} catch(ParseException e) {
-			System.out.println(Logger.getDate() + " [" + SWRLRulesRDF.className + "] Parameters are not corrects");
+			System.out.println(Logger.getDate() + " [" + SWRLRulesRDF.className + "] ERROR : Parameters given are not corrects");
 			formatter.printHelp(className, options);
             System.exit(1);
 		}
 		
-		File file = new File(cmd.getOptionValue(Parameters.FILE));
-		if(!file.exists()) {
-			System.out.println(Logger.getDate() + " [" + SWRLRulesRDF.className + "] file path is not correct ...");
-			return;
-		}	
-		Global.SPARQL_ENDPOINT = cmd.getOptionValue(Parameters.URL);
+		return cmd;
+    }
+	
+	/**
+	 * The entry point of the Genetic Algorithm application.
+	 * @param args 
+	 * @throws Exception 
+	 */
+	public static void main(String args[]) throws Exception
+	{
 		
-		if(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTIONS) != null) 
-			Global.NB_EXECUTIONS = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTIONS));
-		if(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION) != null)
-			Global.MAX_SIZE_GENERATION = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION));
-		if(cmd.getOptionValue(Parameters.CROSSOVER_SIZE) != null)
-			Global.CROSSOVER_SIZE = Integer.parseInt(cmd.getOptionValue(Parameters.CROSSOVER_SIZE));
-		if(cmd.getOptionValue(Parameters.MUTATION_SIZE) != null)
-			Global.MUTATION_SIZE = Integer.parseInt(cmd.getOptionValue(Parameters.MUTATION_SIZE));
-		if(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD) != null)
-			Global.MUTATION_THR = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD));
+		CommandLine cmd = initParameters(args);
 		
-		// try {
-		// Load file and url
-		/**
-		File file = new File(args[0]);
+		// FILE
+	    File file = new File(cmd.getOptionValue(Parameters.FILE));
 		if(!file.exists()) {
-			System.out.println(Logger.getDate() + " [com.i3s.app.SWRLRulesRDF] file path is not correct ...");
-			return;
+			System.out.println(Logger.getDate() + " [" + SWRLRulesRDF.className + "] ERROR : file path is not correct: " + cmd.getOptionValue(Parameters.FILE));
+			System.exit(1);
 		}
+		
+		// URL
 		try {
-			Global.SPARQL_ENDPOINT = args[1];
-		} catch(IndexOutOfBoundsException e) {
-			System.out.println(Logger.getDate() + " [com.i3s.app.SWRLRulesRDF] url is required ...");
-			return;
+			// check the availability of URL
+			(new URL(cmd.getOptionValue(Parameters.SPARQL_ENDPOINT))).openStream().close();
+			// define value of URL
+			Global.SPARQL_ENDPOINT = cmd.getOptionValue(Parameters.SPARQL_ENDPOINT);
+		} catch (Exception e) {
+			System.out.println(Logger.getDate() + " [" + className + "] ERROR : URL is not avalaible: " + cmd.getOptionValue(Parameters.SPARQL_ENDPOINT));
+			System.exit(1);
 		}
-		// Load parameters 
-		try {
-			Global.NB_EXECUTIONS = Integer.parseInt(args[2]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MAX_SIZE_GENERATION = Integer.parseInt(args[3]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.CROSSOVER_SIZE = Integer.parseInt(args[4]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MUTATION_SIZE = Integer.parseInt(args[5]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MUTATION_THR = Double.parseDouble(args[6]);
-		} catch(IndexOutOfBoundsException e) {}
-		**/
+		
+		// number of execution
+		if(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTION) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTION));
+			// check if the number of execution is greater than 0
+			if(value > 0) {
+				Global.NB_EXECUTIONS = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Number of execution must be greater than 0: " + value);
+				System.exit(1);
+			}
+		}
+		
+		// number of generation
+		if(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION));
+			// check if the number of generation is greater than 0
+			if(value > 0) {
+				Global.MAX_SIZE_GENERATION = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Number of generation must be greater than 0: " + value);
+				System.exit(1);
+			}
+		}
 			
-		// init output folder
-		// output folder takes the name of current file without extension and current date
-		// -> ./output/covid19/01012021_080000/
-		Global.outputName = FilenameUtils.removeExtension(file.getName());
-		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy_HHmmss");  
-	    Date date = new Date();
-		Global.outputDir = Global.OUTPUT_PATH + Global.outputName + "/" + format.format(date);
-		File outputDirectory = new File(Global.outputDir);
-		if(!outputDirectory.exists()) {
-			outputDirectory.mkdirs();
+		// population size
+		if(cmd.getOptionValue(Parameters.POPULATION_SIZE) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.POPULATION_SIZE));
+			// check if the population size is greater than 0
+			if(value > 0) {
+				Global.MAX_SIZE_POPULATION = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Population size must be greater than 0: " + value);
+				System.exit(1);
+			}
 		}
+			
+		// crossover rate
+		if(cmd.getOptionValue(Parameters.CROSSOVER_RATE) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.CROSSOVER_RATE));
+			// test if the crossover rate is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.CROSSOVER_RATE = value;
+				Global.CROSSOVER_SIZE = (int) Math.round(Global.CROSSOVER_RATE * Global.MAX_SIZE_POPULATION);
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Crossover rate must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}
+		
+		// mutation rate
+		if(cmd.getOptionValue(Parameters.MUTATION_RATE) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_RATE));
+			// test if the mutation rate is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.MUTATION_RATE = value;
+				Global.MUTATION_SIZE = (int) Math.round(Global.MUTATION_RATE * Global.MAX_SIZE_POPULATION);
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Mutation rate must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}
+		
+		// mutation threshold
+		if(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD));
+			// test if the mutation threshold is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.MUTATION_THR = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Mutation threshold must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}
+		
+		// Init output folder
+		createOutputDirectory(Global.OUTPUT_PATH, file);
 		
 		// Write all printed text in log file
-		
 		logFile = new Logger(new FileWriter(Global.outputDir + "/log.txt"));
 		
 		// print the banner
-		logFile.printBanner("SWRLRulesFromRDF", file.getName(), Global.SPARQL_ENDPOINT, Global.NB_EXECUTIONS, Global.MAX_SIZE_GENERATION, Global.CROSSOVER_SIZE, Global.MUTATION_SIZE, Global.MUTATION_THR, true);
+		logFile.printBanner("SWRLRulesFromRDF", file.getName(), Global.SPARQL_ENDPOINT, Global.NB_EXECUTIONS, Global.MAX_SIZE_GENERATION, Global.MAX_SIZE_POPULATION, Global.CROSSOVER_RATE, Global.MUTATION_RATE, Global.MUTATION_THR, true);
 		// file loaded 
 		logFile.log("INFO", className, "file " + file.getPath() + " loaded ...");
 		// folder created
-		logFile.log("INFO", className, "folder " + outputDirectory.getPath() + " created ...");
+		logFile.log("INFO", className, "folder " + Global.outputDir + " created ...");
 		
 		//Populate the data structure
 		SWRLRulesRDF rdf = new SWRLRulesRDF(file.getPath());
@@ -412,9 +464,6 @@ public class SWRLRulesRDF
 
 		}
 
-		// } catch (InterruptedException e) {
-		//	logFile.log("ERROR", className, e.getMessage());
-		// }  
 		logFile.log("INFO", className, "END SWRLRulesFromRDF.");
 		logFile.closeFile();
 	}
@@ -454,8 +503,7 @@ public class SWRLRulesRDF
 			String[] body = strBody.split("&");
 			ArrayList<String> variables = new ArrayList<String>();
 			ArrayList<String> patternsBody = new ArrayList<String>();
-	
-	
+
 			for(int i=0; i<body.length; i++) {
 				String strName = body[i].substring(0, body[i].indexOf("(")).trim();
 				patternsBody.add(strName);
@@ -532,4 +580,22 @@ public class SWRLRulesRDF
 		}
 		
 	}
+	
+	/**
+	 * Init output folder: output folder takes the name of current file without extension and current date.
+	 * For instance: ./output/covid19/01012021_080000/ if the name of file is "covid19" processed on 1 January at 8 a.m
+	 * @param outputPath the path of output directory
+	 * @param file the instance of file to create an output folder with its name
+	 */
+	public static void createOutputDirectory(String outputPath, File file) {
+		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy_HHmmss");  
+	    Date date = new Date();
+		Global.outputName = FilenameUtils.removeExtension(file.getName());
+		Global.outputDir = outputPath + Global.outputName + "/" + format.format(date);
+		File outputDirectory = new File(Global.outputDir);
+		if(!outputDirectory.exists()) {
+			outputDirectory.mkdirs();
+		}
+	}
+	
 }

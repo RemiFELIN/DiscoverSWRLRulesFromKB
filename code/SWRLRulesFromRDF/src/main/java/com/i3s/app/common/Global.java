@@ -117,7 +117,17 @@ public class Global
     /**
      * Choose the maximum number of patterns in a population.
      */
-    public static final int MAX_SIZE_POPULATION = 2000;    
+    public static int MAX_SIZE_POPULATION = 2000;    
+    
+    /**
+     * Choose the population rate used to compute the crossover size
+     */
+    public static double CROSSOVER_RATE = 0.25;
+    
+    /** 
+     * Choose the population rate used to compute the mutation size
+     */
+    public static double MUTATION_RATE = 0.25;
     
     /**
      * Choose the maximum number of executions for module
@@ -132,13 +142,12 @@ public class Global
     /**
      * Choose the number of times to crossover between the patterns of a population.
      */
-    public static int CROSSOVER_SIZE = 500;
+    public static int CROSSOVER_SIZE = (int) Math.round(CROSSOVER_RATE * MAX_SIZE_POPULATION);
     
     /**
      * Choose the number of times to mutation between the patterns of a population.
-
      */
-    public static int MUTATION_SIZE = 500;
+    public static int MUTATION_SIZE = (int) Math.round(MUTATION_RATE * MAX_SIZE_POPULATION);
     
     /**
      * Choose the threshold thanks to which the specialization or the generalization is made.

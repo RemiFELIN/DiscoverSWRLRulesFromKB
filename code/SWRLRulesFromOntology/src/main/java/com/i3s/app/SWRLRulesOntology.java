@@ -2,6 +2,7 @@ package com.i3s.app;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -69,6 +70,65 @@ public class SWRLRulesOntology
         IndividualProcessing.getAllOfIndividuals(this.kbStratified);
     }
     
+    /**
+     * Initialize all parameters needed to execute this tool
+     * @param args the arguments given at execution
+     * @return cmd an instance of the CommandLine if all parameters are avalaible, else null
+     */
+    public static CommandLine initParameters(String args[]) {
+    	
+    	Options options = new Options();
+		
+    	Option paramFile = new Option(Parameters.FILE, true, Parameters.FILE_DESCRIPTION);
+		Option paramUrl = new Option(Parameters.PREFIX_KB_URL, Parameters.PREFIX_KB_URL_FULL, true, Parameters.PREFIX_KB_URL_DESCRIPTION);
+		Option paramNexe = new Option(Parameters.NUMBER_OF_EXECUTION, Parameters.NUMBER_OF_EXECUTION_FULL, true, Parameters.NUMBER_OF_EXECUTION_DESCRIPTION);
+		Option paramNgen = new Option(Parameters.NUMBER_OF_GENERATION, Parameters.NUMBER_OF_GENERATION_FULL, true, Parameters.NUMBER_OF_GENERATION_DESCRIPTION);
+		Option paramPosz = new Option(Parameters.POPULATION_SIZE, Parameters.POPULATION_SIZE_FULL, true, Parameters.POPULATION_SIZE_DESCRIPTION);
+		Option paramCrrt = new Option(Parameters.CROSSOVER_RATE, Parameters.CROSSOVER_RATE_FULL, true, Parameters.CROSSOVER_RATE_DESCRIPTION);
+		Option paramMtrt = new Option(Parameters.MUTATION_RATE, Parameters.MUTATION_RATE_FULL, true, Parameters.MUTATION_RATE_DESCRIPTION);
+		Option paramMtth = new Option(Parameters.MUTATION_THRESHOLD, Parameters.MUTATION_THRESHOLD_FULL, true, Parameters.MUTATION_THRESHOLD_DESCRIPTION);
+		Option paramCstf = new Option(Parameters.CHECK_CONSISTENCY_FILE, Parameters.CHECK_CONSISTENCY_FILE_FULL, true, Parameters.CHECK_CONSISTENCY_FILE_DESCRIPTION);
+		
+		paramFile.setRequired(true);
+		paramUrl.setRequired(true);
+		paramNexe.setRequired(false);
+		paramNexe.setType(Integer.class);
+		paramNgen.setRequired(false);
+		paramNgen.setType(Integer.class);
+		paramPosz.setRequired(false);
+		paramPosz.setType(Integer.class);
+		paramCrrt.setRequired(false);
+		paramCrrt.setType(Integer.class);
+		paramMtrt.setRequired(false);
+		paramMtrt.setType(Integer.class);
+		paramMtth.setRequired(false);
+		paramMtth.setType(Double.class);
+		paramCstf.setRequired(false);
+		
+		options.addOption(paramFile);
+		options.addOption(paramUrl);
+		options.addOption(paramNexe);
+		options.addOption(paramNgen);
+		options.addOption(paramPosz);
+		options.addOption(paramCrrt);
+		options.addOption(paramMtrt);
+		options.addOption(paramMtth);
+		options.addOption(paramCstf);
+		
+		CommandLineParser parser = new DefaultParser();
+		HelpFormatter formatter = new HelpFormatter();
+		CommandLine cmd = null;
+		
+		try {
+			cmd = parser.parse(options, args);
+		} catch(ParseException e) {
+			System.out.println(Logger.getDate() + " [" + SWRLRulesOntology.className + "] Parameters are not corrects");
+			formatter.printHelp(className, options);
+            System.exit(1);
+		}
+		
+		return cmd;
+    }
     
     /**
      * @param strFileName the file in which the rules will be written.
@@ -141,6 +201,9 @@ public class SWRLRulesOntology
             int count = 0;
 
             logFile.log("INFO", className, "Size of final population: " + population.getListIndividuals().size());
+            logFile.log("INFO", className, "The number of times to crossover between the patterns of a population: " + Global.CROSSOVER_SIZE);
+            logFile.log("INFO", className, "The number of times to mutation between the patterns of a population: " + Global.MUTATION_SIZE);
+            
             int count2 = 0;
             for(int i = 0; i < population.getListIndividuals().size(); i++)
             {   
@@ -169,140 +232,122 @@ public class SWRLRulesOntology
 	 */
     public static void main(String args[]) throws Exception
     {
-	    
-    	Options options = new Options();
-		
-		Option paramFile = new Option(Parameters.FILE, true, Parameters.FILE_DESCRIPTION);
-		Option paramUrl = new Option(Parameters.URL, true, Parameters.URL_DESCRIPTION);
-		Option paramNexe = new Option(Parameters.NUMBER_OF_EXECUTIONS, Parameters.NUMBER_OF_EXECUTIONS_FULL, true, Parameters.NUMBER_OF_EXECUTIONS_DESCRIPTION);
-		Option paramNgen = new Option(Parameters.NUMBER_OF_GENERATION, Parameters.NUMBER_OF_GENERATION_FULL, true, Parameters.NUMBER_OF_GENERATION_DESCRIPTION);
-		Option paramCrsz = new Option(Parameters.CROSSOVER_SIZE, Parameters.CROSSOVER_SIZE_FULL, true, Parameters.CROSSOVER_SIZE_DESCRIPTION);
-		Option paramMtsz = new Option(Parameters.MUTATION_SIZE, Parameters.MUTATION_SIZE_FULL, true, Parameters.MUTATION_SIZE_DESCRIPTION);
-		Option paramMtth = new Option(Parameters.MUTATION_THRESHOLD, Parameters.MUTATION_THRESHOLD_FULL, true, Parameters.MUTATION_THRESHOLD_DESCRIPTION);
-		Option paramCstf = new Option(Parameters.CHECK_CONSISTENCE_FILE, Parameters.CHECK_CONSISTENCE_FILE_FULL, true, Parameters.CHECK_CONSISTENCE_FILE_DESCRIPTION);
-		
-		paramFile.setRequired(true);
-		paramUrl.setRequired(true);
-		paramNexe.setRequired(false);
-		paramNexe.setType(Integer.class);
-		paramNgen.setRequired(false);
-		paramNgen.setType(Integer.class);
-		paramCrsz.setRequired(false);
-		paramCrsz.setType(Integer.class);
-		paramMtsz.setRequired(false);
-		paramMtsz.setType(Integer.class);
-		paramMtth.setRequired(false);
-		paramMtth.setType(Double.class);
-		paramCstf.setRequired(false);
-		
-		options.addOption(paramFile);
-		options.addOption(paramUrl);
-		options.addOption(paramNexe);
-		options.addOption(paramNgen);
-		options.addOption(paramCrsz);
-		options.addOption(paramMtsz);
-		options.addOption(paramMtth);
-		options.addOption(paramCstf);
-		
-		CommandLineParser parser = new DefaultParser();
-		HelpFormatter formatter = new HelpFormatter();
-		CommandLine cmd = null;
-		
-		try {
-			cmd = parser.parse(options, args);
-		} catch(ParseException e) {
-			System.out.println(Logger.getDate() + " [" + SWRLRulesOntology.className + "] Parameters are not corrects");
-			formatter.printHelp(className, options);
-            System.exit(1);
-		}
+    	// initialize our parameters using Apache commons API
+    	CommandLine cmd = initParameters(args);
     	
+		// FILE
 	    File file = new File(cmd.getOptionValue(Parameters.FILE));
-	    // Load file and url
+	    // check the path
 		if(file.exists()) {
 			Global.file_name_stratified = "file:" + file.getAbsolutePath().replace("\\", "/");
-			// Global.IRI_INPUT_STRATIFIED = IRI.create(Global.file_name_stratified);
 			Global.IRI_INPUT_STRATIFIED = IRI.create(Global.file_name_stratified);
 		} else {
 			System.out.println(Logger.getDate() + " [" + className + "] ERROR : File path is not correct: " + cmd.getOptionValue(Parameters.FILE));
 			System.exit(1);
 		}
-		Global.BASE_URL = cmd.getOptionValue(Parameters.URL);
 		
-		if(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTIONS) != null) 
-			Global.NB_EXECUTIONS = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTIONS));
-		if(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION) != null)
-			Global.MAX_SIZE_GENERATION = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION));
-		if(cmd.getOptionValue(Parameters.CROSSOVER_SIZE) != null)
-			Global.CROSSOVER_SIZE = Integer.parseInt(cmd.getOptionValue(Parameters.CROSSOVER_SIZE));
-		if(cmd.getOptionValue(Parameters.MUTATION_SIZE) != null)
-			Global.MUTATION_SIZE = Integer.parseInt(cmd.getOptionValue(Parameters.MUTATION_SIZE));
-		if(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD) != null)
-			Global.MUTATION_THR = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD));
-		if(cmd.getOptionValue(Parameters.CHECK_CONSISTENCE_FILE) != null) {
-			if((new File(cmd.getOptionValue(Parameters.CHECK_CONSISTENCE_FILE)).exists())) {
-				setToCheck(true);
-				Global.FILE_NAME_FULL = "file:///" + cmd.getOptionValue(Parameters.CHECK_CONSISTENCE_FILE).replace("\\", "/");
-				Global.IRI_INPUT_FULL = IRI.create(Global.FILE_NAME_FULL);
+		// URL
+		Global.BASE_URL = cmd.getOptionValue(Parameters.PREFIX_KB_URL);
+		
+		// number of execution
+		if(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTION) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_EXECUTION));
+			// check if the number of execution is greater than 0
+			if(value > 0) {
+				Global.NB_EXECUTIONS = value;
 			} else {
-				System.out.println(Logger.getDate() + " [" + className + "] ERROR : File path is not correct: " + cmd.getOptionValue(Parameters.CHECK_CONSISTENCE_FILE));
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Number of execution must be greater than 0: " + value);
 				System.exit(1);
 			}
 		}
 		
-		/**
-		try {
-			Global.BASE_URL = args[1];
-		} catch(NullPointerException e) {
-			System.out.println(Logger.getDate() + " [" + className + "] ERROR : URL is required ...");
-			return;
-		}
-		// Load parameters
-		try {
-			Global.NB_EXECUTIONS = Integer.parseInt(args[2]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MAX_SIZE_GENERATION = Integer.parseInt(args[3]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.CROSSOVER_SIZE = Integer.parseInt(args[4]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MUTATION_SIZE = Integer.parseInt(args[5]);
-		} catch(IndexOutOfBoundsException e) {}
-		try {
-			Global.MUTATION_THR = Double.parseDouble(args[6]);
-		} catch(IndexOutOfBoundsException e) {}
-		// check option
-		try {
-			if(args[7].equals("-check")) {
-				setToCheck(true);
+		// number of generation
+		if(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.NUMBER_OF_GENERATION));
+			// check if the number of generation is greater than 0
+			if(value > 0) {
+				Global.MAX_SIZE_GENERATION = value;
 			} else {
-				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Wrong option given ...");
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Number of generation must be greater than 0: " + value);
+				System.exit(1);
 			}
-		} catch(IndexOutOfBoundsException e) {}
-		**/
-		
-		// init output folder
-		// output folder takes the name of current file without extension and current date
-		// for instance: ./output/covid19/01012021_080000/
-		Global.outputName = FilenameUtils.removeExtension(file.getName());
-		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy_HHmmss");  
-	    Date date = new Date();
-		Global.outputDir = Global.OUTPUT_PATH + Global.outputName + "/" + format.format(date);
-		File outputDirectory = new File(Global.outputDir);
-		if(!outputDirectory.exists()) {
-			outputDirectory.mkdirs();
 		}
+			
+		// population size
+		if(cmd.getOptionValue(Parameters.POPULATION_SIZE) != null) {
+			int value = Integer.parseInt(cmd.getOptionValue(Parameters.POPULATION_SIZE));
+			// check if the population size is greater than 0
+			if(value > 0) {
+				Global.MAX_SIZE_POPULATION = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Population size must be greater than 0: " + value);
+				System.exit(1);
+			}
+		}
+			
+		// crossover rate
+		if(cmd.getOptionValue(Parameters.CROSSOVER_RATE) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.CROSSOVER_RATE));
+			// test if the crossover rate is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.CROSSOVER_RATE = value;
+				Global.CROSSOVER_SIZE = (int) Math.round(Global.CROSSOVER_RATE * Global.MAX_SIZE_POPULATION);
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Crossover rate must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}
+		
+		// mutation rate
+		if(cmd.getOptionValue(Parameters.MUTATION_RATE) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_RATE));
+			// test if the mutation rate is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.MUTATION_RATE = value;
+				Global.MUTATION_SIZE = (int) Math.round(Global.MUTATION_RATE * Global.MAX_SIZE_POPULATION);
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Mutation rate must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}
+		
+		// mutation threshold
+		if(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD) != null) {
+			Double value = Double.parseDouble(cmd.getOptionValue(Parameters.MUTATION_THRESHOLD));
+			// test if the mutation threshold is between 0 and 1
+			if(value >= 0.0 && value <= 1.0) {
+				Global.MUTATION_THR = value;
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : Mutation threshold must be included between 0 and 1 : " + value);
+				System.exit(1);
+			}
+		}	
+		
+		// check consistency file 
+		if(cmd.getOptionValue(Parameters.CHECK_CONSISTENCY_FILE) != null) {
+			File fullOntologyFile = new File(cmd.getOptionValue(Parameters.CHECK_CONSISTENCY_FILE));
+			if(fullOntologyFile.exists()) {
+				setToCheck(true);
+				Global.FILE_NAME_FULL = "file:///" + fullOntologyFile.getAbsolutePath().replace("\\", "/");
+				Global.IRI_INPUT_FULL = IRI.create(Global.FILE_NAME_FULL);
+			} else {
+				System.out.println(Logger.getDate() + " [" + className + "] ERROR : File path is not correct: " + cmd.getOptionValue(Parameters.CHECK_CONSISTENCY_FILE));
+				System.exit(1);
+			}
+		}
+		
+		// Init output folder
+		createOutputDirectory(Global.OUTPUT_PATH, file);
 		
 		// Write all printed text in log file
     	logFile = new Logger(new FileWriter(Global.outputDir + "/log.txt"));
 		
 		// print the banner
-    	logFile.printBanner("SWRLRulesOntology", file.getName(), Global.BASE_URL, Global.NB_EXECUTIONS, Global.MAX_SIZE_GENERATION, Global.CROSSOVER_SIZE, Global.MUTATION_SIZE, Global.MUTATION_THR, isToCheck());
+    	logFile.printBanner("SWRLRulesOntology", file.getName(), Global.BASE_URL, Global.NB_EXECUTIONS, Global.MAX_SIZE_GENERATION,Global.MAX_SIZE_POPULATION, Global.CROSSOVER_RATE, Global.MUTATION_RATE, Global.MUTATION_THR, isToCheck());
 		// file loaded 
     	logFile.log("INFO", className, "file " + file.getPath() + " loaded ...");
 		// folder created
-    	logFile.log("INFO", className, "folder " + outputDirectory.getPath() + " created ...");
+    	logFile.log("INFO", className, "folder " + Global.outputDir + " created ...");
 		
 	    //Populate the data structure
 		SWRLRulesOntology ontology = new SWRLRulesOntology(file.getPath());
@@ -316,8 +361,6 @@ public class SWRLRulesOntology
 
 			// if check phase is activated, we need to save all files to be checked
 			if(isToCheck()) {
-				// System.out.println("generated file: " + pathGeneratedFile);
-				// for(String test: Global.LIST_INPUT_PATTERNS_IN_FILE);
 				Global.LIST_INPUT_PATTERNS_IN_FILE.add(pathGeneratedFile);
 			}
 			
@@ -351,5 +394,22 @@ public class SWRLRulesOntology
 	public static void setToCheck(boolean toCheck) {
 		SWRLRulesOntology.toCheck = toCheck;
 	}
-
+	
+	/**
+	 * Init output folder: output folder takes the name of current file without extension and current date.
+	 * For instance: ./output/covid19/01012021_080000/ if the name of file is "covid19" processed on 1 January at 8 a.m
+	 * @param outputPath the path of output directory
+	 * @param file the instance of file to create an output folder with its name
+	 */
+	public static void createOutputDirectory(String outputPath, File file) {
+		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy_HHmmss");  
+	    Date date = new Date();
+		Global.outputName = FilenameUtils.removeExtension(file.getName());
+		Global.outputDir = outputPath + Global.outputName + "/" + format.format(date);
+		File outputDirectory = new File(Global.outputDir);
+		if(!outputDirectory.exists()) {
+			outputDirectory.mkdirs();
+		}
+	}
+	
 }

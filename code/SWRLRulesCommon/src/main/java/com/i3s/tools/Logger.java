@@ -58,27 +58,29 @@ public class Logger {
 	 * and parameters values
 	 * @param title the title of module.
 	 * @param filepath path of file given.
-	 * @param url It can be the sparql endpoint to make our requests (ex: http://covidontheweb.inria.fr/sparql) or URL of the knowledge base to be analyze (ex: ).
+	 * @param url It can be a sparql endpoint to make our requests (ex: http://covidontheweb.inria.fr/sparql) or a prefix URL of the knowledge base to be analyze (ex: http://www.biopax.org/examples/glycolysis#).
 	 * @param nbExecutions the number of executions. (by default: 2)
 	 * @param nbGenerations the number of generations. (by default: 200)
-	 * @param crossoverSize the number of times to crossover between the patterns of a population. (by default: 500)
-	 * @param mutationSize the number of times to mutation between the patterns of a population. (by default: 500)
+	 * @param populationSize the maximum number of patterns in a population. (by default: 2000)
+	 * @param crossoverRate the number of times to crossover between the patterns of a population. (by default: 0.25)
+	 * @param mutationRate the number of times to mutation between the patterns of a population. (by default: 0.25)
 	 * @param mutationThr the threshold thanks to which the specialization or the generalization is made. (by default: 0.2)
 	 * @param toCheck a boolean to launch consistency check phase if true, else this tool is not used
 	 */
-	public void printBanner(String title, String filepath, String url, int nbExecutions, int nbGenerations, int crossoverSize, int mutationSize, double mutationThr, boolean toCheck) {
+	public void printBanner(String title, String filepath, String url, int nbExecutions, int nbGenerations, int populationSize, double crossoverRate, double mutationRate, double mutationThr, boolean toCheck) {
 		writeLineOnFileAndPrint("************************************************************************************************************************************************");
 		writeLineOnFileAndPrint("* " + title);
 		writeLineOnFileAndPrint("* Date: " + getDate());
 		writeLineOnFileAndPrint("* Parameters: ");
-		writeLineOnFileAndPrint("* - File                  : " + filepath);
-		writeLineOnFileAndPrint("* - URL                   : " + url);
-		writeLineOnFileAndPrint("* - Number of executions  (default value: 2)   : " + nbExecutions);
-		writeLineOnFileAndPrint("* - Number of generations (default value: 200) : " + nbGenerations);
-		writeLineOnFileAndPrint("* - Crossover size        (default value: 500) : " + crossoverSize);
-		writeLineOnFileAndPrint("* - Mutation size         (default value: 500) : " + mutationSize);
-		writeLineOnFileAndPrint("* - Mutation threshold    (default value: 0.2) : " + mutationThr);
-		writeLineOnFileAndPrint("* - Consistency check phase                    : " + (toCheck ? "YES" : "NO"));
+		writeLineOnFileAndPrint("* - File                                        : " + filepath);
+		writeLineOnFileAndPrint("* - URL                                         : " + url);
+		writeLineOnFileAndPrint("* - Number of executions  (default value: 2)    : " + nbExecutions);
+		writeLineOnFileAndPrint("* - Number of generations (default value: 200)  : " + nbGenerations);
+		writeLineOnFileAndPrint("* - Population size       (default value: 2000) : " + populationSize);
+		writeLineOnFileAndPrint("* - Crossover rate        (default value: 0.25) : " + crossoverRate);
+		writeLineOnFileAndPrint("* - Mutation rate         (default value: 0.25) : " + mutationRate);
+		writeLineOnFileAndPrint("* - Mutation threshold    (default value: 0.2)  : " + mutationThr);
+		writeLineOnFileAndPrint("* - Consistency check phase                     : " + (toCheck ? "YES" : "NO"));
 		writeLineOnFileAndPrint("************************************************************************************************************************************************");
 	}
 	
