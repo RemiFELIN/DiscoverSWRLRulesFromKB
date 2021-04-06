@@ -27,7 +27,7 @@ it contains :
 
 > [Java](https://www.java.com/fr/download/) is required to run the jar files
 
-## Installation du projet :
+## Installation
 
 To create new jar files from the source code, you must execute the following command : 
 
