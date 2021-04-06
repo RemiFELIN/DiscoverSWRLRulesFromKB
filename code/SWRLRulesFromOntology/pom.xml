@@ -67,7 +67,7 @@
 			                        <mainClass>com.i3s.app.SWRLRulesOntology</mainClass>
 				                </transformer>
 				            </transformers>
-				            <outputDirectory>./../../</outputDirectory>
+				            <outputDirectory>./../../jar/</outputDirectory>
 			        	</configuration>
 			        </execution>
 				</executions>

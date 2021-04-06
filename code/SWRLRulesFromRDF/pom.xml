@@ -55,7 +55,7 @@
 		                        <mainClass>com.i3s.app.SWRLRulesRDF</mainClass>
 			                </transformer>
 			            </transformers>
-			            <outputDirectory>./../../</outputDirectory>
+			            <outputDirectory>./../../jar/</outputDirectory>
 		        	</configuration>
 		        </execution>
 			</executions>

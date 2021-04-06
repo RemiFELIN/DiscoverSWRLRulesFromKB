@@ -33,7 +33,7 @@ To create new jar files from the source code, you must execute the following com
 
 	mvn clean install
 
-This command will compile source code, encapsulate all dependencies of each tools and create the following jar files on the root directory :
+This command will compile source code, encapsulate all dependencies of each tools and create the following jar files on the [jar](https://github.com/RemiFELIN/DiscoverSWRLRulesFromKB/tree/main/jar) directory :
 
 	DiscoverSWRLRulesFromOntology.jar
 	DiscoverSWRLRulesFromRDF.jar
@@ -134,43 +134,42 @@ This jar file takes the following parameters :
 ## Examples
 
 ### DiscoverSWRLRulesFromRDF.jar
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 10 -crrt 0.1 -mtrt 0.1 -posz 1000 -mtth 0.2
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -spqu http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 10 -crrt 0.1 -mtrt 0.1 -posz 1000 -mtth 0.2
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 3 -ngen 10
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -spqu http://covidontheweb.inria.fr/sparql -nexe 3 -ngen 10
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -url http://covidontheweb.inria.fr/sparql -nexe 5 -ngen 20 -mtsz 400 -mtth 0.25 -file Covid19.txt
+> java -jar DiscoverSWRLRulesFromRDF.jar -spqu http://covidontheweb.inria.fr/sparql -nexe 5 -ngen 20 -mtrt 0.4 -mtth 0.25 -file ./../dataset/Covid19.txt
 
 ### DiscoverSWRLRulesFromOntology.jar
-> java -jar DiscoverSWRLRulesFromOntology.jar -file Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -nexe 2 -ngen 100 -crrt 0.3 -mtrt 0.1 -mtth 0.2
+> java -jar DiscoverSWRLRulesFromOntology.jar -file ./../dataset/Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -nexe 2 -ngen 100 -crrt 0.3 -mtrt 0.1 -mtth 0.2
 
-> java -jar DiscoverSWRLRulesFromOntology.jar -file Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -nexe 1 -ngen 50 -mtth 0.25 -cstf Biopax_Full.owl
+> java -jar DiscoverSWRLRulesFromOntology.jar -file ./../dataset/Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -nexe 1 -ngen 50 -mtth 0.25 -cstf ./../dataset/Biopax_Full.owl
 
-> java -jar DiscoverSWRLRulesFromOntology.jar -file Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -cstf Biopax_Full.owl
+> java -jar DiscoverSWRLRulesFromOntology.jar -file ./../dataset/Biopax_30.owl -pkbu http://www.biopax.org/examples/glycolysis# -cstf ./../dataset/Biopax_Full.owl
 
 
 ## Example of use for studies
 
 **Does the crossover rate greatly influence the number of consistent rules found?**
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.1
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.1
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.15
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.15
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven
-\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.2
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.2
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.25
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.25
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.3
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -crrt 0.3
 
 **... and the mutation rate?**
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.1
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.1
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.15
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.15
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.2
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.2
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.25
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.25
 
-> java -jar DiscoverSWRLRulesFromRDF.jar -file D:\Travail\MIAGE\Stage\repo\Maven\Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.3
+> java -jar DiscoverSWRLRulesFromRDF.jar -file ./../dataset/Covid19.txt -url http://covidontheweb.inria.fr/sparql -nexe 1 -ngen 100 -mtrt 0.3

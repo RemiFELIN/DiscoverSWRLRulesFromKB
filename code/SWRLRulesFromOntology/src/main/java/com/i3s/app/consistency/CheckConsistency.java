@@ -39,6 +39,7 @@ public class CheckConsistency
 			return;
 		}
     	
+		logFile.log("INFO", className, "Full ontology loaded: " + Global.FILE_NAME_FULL);
 		logFile.log("INFO", className, "STARTING " + file.getAbsolutePath() + " ANALYSIS ...");     
       
         // the file with the rules checked
